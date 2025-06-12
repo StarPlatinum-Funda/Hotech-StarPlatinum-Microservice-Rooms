@@ -1,72 +1,77 @@
 package com.github.hotech.rooms.domain.model.aggregates;
 
 import com.github.hotech.rooms.domain.model.commands.CreateRoomCommand;
-import com.github.hotech.rooms.domain.model.valueobjects.GuestName;
-import com.github.hotech.rooms.domain.model.valueobjects.RoomReservation;
+import com.github.hotech.rooms.domain.model.commands.UpdateRoomCommand;
 import com.github.hotech.rooms.domain.model.valueobjects.RoomStatus;
 import com.github.hotech.rooms.domain.model.valueobjects.RoomType;
 import com.github.hotech.shared.domain.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.Date;
 
 @Entity
+@Getter
 public class Room extends AuditableAbstractAggregateRoot<Room> {
 
-    @Getter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private int roomNumber;
 
-    @Embedded
-    private GuestName guest;
-
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RoomType type;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
 
-    @Embedded
-    private RoomReservation reservation;
+    @Column(nullable = false)
+    private Long userId;
 
-    public Room(String firstName, String lastName, String roomType, String roomStatus, int roomNumber, Date initialDate, Date finalDate) {
-        this.guest = new GuestName(firstName, lastName);
+    public Room(String roomType, int roomNumber, Long userId) {
         this.roomNumber = roomNumber;
-        this.reservation = new RoomReservation(initialDate,finalDate);
         this.type = RoomType.valueOf(roomType);
-        this.status = RoomStatus.valueOf(roomStatus);
+        this.status = RoomStatus.VACANT;
+        this.userId = userId;
     }
 
     public Room(CreateRoomCommand command) {
-        this.guest = new GuestName(command.firstName(), command.lastName());
-        this.type = RoomType.valueOf(command.type());
-        this.status = RoomStatus.valueOf(command.Status());
         this.roomNumber = command.roomNumber();
-        this.reservation = new RoomReservation(command.initialDate(), command.finalDate());
+        this.type = RoomType.valueOf(command.type());
+        this.status = RoomStatus.VACANT;
+        this.userId = command.userId();
     }
 
     public Room() {
     }
 
-    public Room updateInformation(String firstName, String lastName,String roomType, String roomStatus, int roomNumber, Date initialDate, Date finalDate){
-        this.guest = new GuestName(firstName, lastName);
+    public Room updateInformation(String roomType, String roomStatus, int roomNumber, Long userId){
         this.roomNumber = roomNumber;
         this.type = RoomType.valueOf(roomType);
         this.status = RoomStatus.valueOf(roomStatus);
-        this.reservation = new RoomReservation(initialDate,finalDate);
+        this.userId = userId;
         return this;
     }
 
-    public void updateGuestName(String firstName, String lastName) {
-        this.guest = new GuestName(firstName, lastName);
+    public Room updateInformation(UpdateRoomCommand command){
+        this.roomNumber = command.roomNumber();
+        this.type = RoomType.valueOf(command.type());
+        this.status = RoomStatus.valueOf(command.status());
+        this.userId = command.userId();
+        return  this;
     }
 
-    public String getGuestFullName() {
+    /*public void updateGuestName(String firstName, String lastName) {
+        this.guest = new GuestName(firstName, lastName);
+    }*/
+
+    /*public String getGuestFullName() {
         return guest.getFullName();
-    }
+    }*/
 
     public String getType() {
         return this.type.name().toLowerCase();
@@ -76,6 +81,6 @@ public class Room extends AuditableAbstractAggregateRoot<Room> {
         return this.status.name().toLowerCase();
     }
 
-    public String getReservationDate() {return reservation.getFullReservationDate();}
+    /*public String getReservationDate() {return reservation.getFullReservationDate();}*/
 
 }

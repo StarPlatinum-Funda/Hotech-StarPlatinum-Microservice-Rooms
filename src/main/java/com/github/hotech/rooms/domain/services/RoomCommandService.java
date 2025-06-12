@@ -1,4 +1,4 @@
-package com.github.hotech.rooms.domain.model.services;
+package com.github.hotech.rooms.domain.services;
 
 import com.github.hotech.rooms.domain.model.aggregates.Room;
 import com.github.hotech.rooms.domain.model.commands.CreateRoomCommand;

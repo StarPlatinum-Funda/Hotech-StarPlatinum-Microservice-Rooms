@@ -4,7 +4,7 @@ import com.github.hotech.rooms.domain.model.aggregates.Room;
 import com.github.hotech.rooms.domain.model.commands.CreateRoomCommand;
 import com.github.hotech.rooms.domain.model.commands.DeleteRoomCommand;
 import com.github.hotech.rooms.domain.model.commands.UpdateRoomCommand;
-import com.github.hotech.rooms.domain.model.services.RoomCommandService;
+import com.github.hotech.rooms.domain.services.RoomCommandService;
 import com.github.hotech.rooms.infrastructure.persistence.jpa.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +19,6 @@ public class RoomCommandServiceImpl implements RoomCommandService {
         this.roomRepository = roomRepository;
     }
 
-
-    @Override
-    public Optional<Room> handle(UpdateRoomCommand command) {
-        if (roomRepository.existsByRoomNumberAndIdIsNot(command.roomNumber(), command.id()))
-            throw new IllegalArgumentException("Room with same room number already exists");
-        var result = roomRepository.findById(command.id());
-        if (result.isEmpty()) throw new IllegalArgumentException("Room does not exist");
-        var roomToUpdate = result.get();
-        try {
-            var updatedRoom = roomRepository.save(roomToUpdate.updateInformation(command.firstName(), command.lastName(), command.type(), command.state(), command.roomNumber(), command.initialDate(), command.finalDate()));
-            return Optional.of(updatedRoom);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error while updating room: " + e.getMessage());
-        }
-    }
-
     @Override
     public Optional<Room> handle(CreateRoomCommand command) {
         if (roomRepository.existsByRoomNumber(command.roomNumber())) {
@@ -44,6 +28,25 @@ public class RoomCommandServiceImpl implements RoomCommandService {
         roomRepository.save(room);
         return Optional.of(room);
     }
+
+
+    @Override
+    public Optional<Room> handle(UpdateRoomCommand command) {
+        if (roomRepository.existsByRoomNumberAndIdIsNot(command.roomNumber(), command.id()))
+            throw new IllegalArgumentException("Room with same room number already exists");
+
+        var result = roomRepository.findById(command.id());
+        if (result.isEmpty()) throw new IllegalArgumentException("Room does not exist");
+
+        var roomToUpdate = result.get();
+        try {
+            var updatedRoom = roomRepository.save(roomToUpdate.updateInformation(command));
+            return Optional.of(updatedRoom);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error while updating room: " + e.getMessage());
+        }
+    }
+
     @Override
     public void handle(DeleteRoomCommand command){
         if(!roomRepository.existsById(command.roomId())){

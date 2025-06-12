@@ -4,7 +4,8 @@ import com.github.hotech.rooms.domain.model.aggregates.Room;
 import com.github.hotech.rooms.domain.model.queries.GetAllRoomsQuery;
 import com.github.hotech.rooms.domain.model.queries.GetRoomByIdQuery;
 import com.github.hotech.rooms.domain.model.queries.GetRoomByTypeQuery;
-import com.github.hotech.rooms.domain.model.services.RoomQueryService;
+import com.github.hotech.rooms.domain.model.queries.GetRoomsByUserIdQuery;
+import com.github.hotech.rooms.domain.services.RoomQueryService;
 import com.github.hotech.rooms.domain.model.valueobjects.RoomType;
 import com.github.hotech.rooms.infrastructure.persistence.jpa.repositories.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,11 @@ public class RoomQueryServiceImpl implements RoomQueryService {
     public Optional<Room> handle(GetRoomByTypeQuery query){
         var enumOption = RoomType.valueOf(query.roomType());
         return roomRepository.findByType(enumOption);
+    }
+
+    @Override
+    public List<Room> handle(GetRoomsByUserIdQuery query) {
+        return roomRepository.findAllByUserId(query.userId()).get();
     }
 
     @Override
