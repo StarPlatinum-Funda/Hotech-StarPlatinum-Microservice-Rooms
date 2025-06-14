@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface RoomQueryService {
     Optional<Room> handle(GetRoomByIdQuery query);
-    Optional<Room> handle(GetRoomByTypeQuery query);
+    List<Room> handle(GetRoomByTypeQuery query);
     List<Room> handle(GetRoomsByUserIdQuery query);
     List<Room> handle(GetAllRoomsQuery query);
 }

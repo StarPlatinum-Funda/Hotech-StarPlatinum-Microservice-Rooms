@@ -11,9 +11,10 @@ import java.util.Optional;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    Optional<Room> findByType(RoomType roomType);
     Optional<List<Room>> findAllByUserId(Long userId);
 
     boolean existsByRoomNumber(int roomNumber);
     boolean existsByRoomNumberAndIdIsNot(int roomNumber, Long id);
+
+    Optional<List<Room>> findAllByType(RoomType enumOption);
 }

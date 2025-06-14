@@ -5,6 +5,6 @@ import com.github.hotech.rooms.interfaces.rest.resources.RoomResource;
 
 public class RoomResourceFromEntityAssembler {
     public static RoomResource toResourceFromEntity(Room entity){
-        return new RoomResource(entity.getId(), entity.getGuestFullName(), entity.getType(), entity.getStatus(), entity.getRoomNumber(), entity.getReservationDate());
+        return new RoomResource(entity.getId(), entity.getRoomNumber(), entity.getType(), entity.getStatus(), entity.getUserId());
     }
 }

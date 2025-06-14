@@ -27,9 +27,9 @@ public class RoomQueryServiceImpl implements RoomQueryService {
     }
 
     @Override
-    public Optional<Room> handle(GetRoomByTypeQuery query){
+    public List<Room> handle(GetRoomByTypeQuery query){
         var enumOption = RoomType.valueOf(query.roomType());
-        return roomRepository.findByType(enumOption);
+        return roomRepository.findAllByType(enumOption).get();
     }
 
     @Override
